@@ -30,7 +30,7 @@ NodeJS server
     - Linux - https://www.ostechnix.com/install-node-js-linux/
 2. Clone repo
 
-       git clone https://github.com/ajimal1992/minimal-nodejs-mvc.git
+       git clone https://github.com/ajimal1992/coco-server.git
 3. Go to repo directory
 
        cd minimal-nodejs-mvc
