@@ -7,6 +7,36 @@ var bodyParser = require('body-parser');
 var path = require('path');
 var app = express();
 
+//nosql
+var DB = require('nosql');
+var nosql = DB.load('db/database.nosql');
+//var staging = DB.load('db/staging.nosql');
+
+// nosql.insert({id:3}, true).where("id",3);
+// nosql.insert({id:3});
+// nosql.insert({ approved: {test2:"test2"} });
+// nosql.update({ id: 2, name:"ajimal"}).make(function(builder) {
+//     // builder.first(); --> updates only one document
+//     builder.where('id', 2);
+//     builder.callback(function(err, count) {
+//         console.log('updated documents:', count);
+//     });
+// });
+// nosql.modify({ name: "onewhosight" }).make(function(builder) {
+//     // builder.first(); --> modifies only one document
+//     builder.where('id', 2);
+//     builder.callback(function(err, count) {
+//         console.log('modified documents:', count);
+//     });
+// });
+// nosql.remove().make(function(builder) {
+//     // builder.first(); --> removes only one document
+//     builder.where("id", 2);
+//     builder.callback(function(err, count) {
+//         console.log('removed documents:', count);
+//     });
+// });
+
 app.use(bodyParser.json()); //use json parser
 
 //specify the resource folders (js and CSS)
