@@ -3,7 +3,7 @@
 		imagename: xxx,
 		polys: [],
 		user: xxx,
-		stage: [STAGING/APPROVED]
+		stage: [PULLED/STAGED/APPROVED]
 	}  
 }
 

@@ -41,6 +41,7 @@ app.use(bodyParser.json()); //use json parser
 
 //specify the resource folders (js and CSS)
 app.use('/favicon.ico', express.static(path.join(__dirname, config.FAVICON_PATH)));
+app.use('/images',express.static(path.join(__dirname, "images"))); 
 app.use('/',express.static(path.join(__dirname, config.SITE_DIR))); 
 
 var server = require('http').createServer(app); 

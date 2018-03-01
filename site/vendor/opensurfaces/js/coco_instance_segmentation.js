@@ -143,6 +143,19 @@ Ctrler.prototype.submit_form = function(data_callback) {
         $("input[name='ans']").val(ans);
         $("input[name='isObj']").val(1);
        // $('#mturk_form').submit();
+       if(window.min_shapes == 0){
+           //change text to next, change min shapes = 1
+           window.min_shapes = 1;
+           $( "#btn-submit" ).html('Next');
+       }
+       else{
+           //send poly data
+           //...
+       }
+       //grab image
+
+       //check for start or next
+
 
        //when user clicks next, go to next image
         $("#mt-container").empty();
