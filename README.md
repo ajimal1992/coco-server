@@ -6,13 +6,16 @@ A modified COCO training software using the example provided by https://github.c
 ## Ubuntu 16.04 Installation
 1. Install nodejs
     - Windows/Mac - https://nodejs.org/en/download/
-    - Linux - https://www.ostechnix.com/install-node-js-linux/
+    - Linux - https://nodejs.org/en/download/package-manager/
+        
+               curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+               sudo apt-get install -y nodejs
 2. Clone repo
 
        git clone https://github.com/ajimal1992/coco-server.git
 3. Go to repo directory
 
-       cd minimal-nodejs-mvc
+       cd coco-server
 4. Install dependencies
 
        npm install
