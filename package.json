@@ -19,7 +19,9 @@
   "homepage": "https://github.com/ajimal1992/coco-server#readme",
   "dependencies": {
     "express": "^4.16.2",
+    "express-session": "^1.15.6",
     "helmet": "^3.11.0",
+    "image-size": "^0.6.2",
     "nosql": "^6.1.0"
   }
 }

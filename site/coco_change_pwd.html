@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <link href="vendor/opensurfaces/css/bootstrap-2.2.1.min.css" rel="stylesheet" type="text/css"/>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="https://rawgit.com/makeusabrew/bootbox/f3a04a57877cab071738de558581fbc91812dce9/bootbox.js"></script>
+
+    </head>
+
+    <body>
+        <div class="modal" style="top: 40%;" id="password_modal">
+                <div class="modal-header">
+                    <h3>General<span class="extra-title muted"></span></h3>
+                </div>
+                <div class="modal-body form-horizontal">
+                    <span>Approved: </span><span id="approved" class="badge badge-pill badge-secondary" style="font-size: large;"></span>
+                    <span style="margin-left:15px">Rejected: </span><span id="rejected" class="badge badge-pill badge-secondary" style="font-size: large;"></span>
+                    <span style="margin-left:15px">Pending: </span><span id="pending" class="badge badge-pill badge-secondary" style="font-size: large;"></span>
+                    <span style="margin-left:15px">Balance: </span><span id="balance" class="badge badge-pill badge-secondary" style="font-size: large;"></span>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="btn_reset">Clear Staging Data</button>
+                    <!-- <button class="btn btn-primary" id="btn_save_files">Save Approved Files</button> -->
+                </div>
+                <div class="modal-header">
+                    <h3>Set Class<span class="extra-title muted"></span></h3>
+                </div>
+                <div class="modal-body form-horizontal">
+                    <label for="class_input" class="control-label">Class</label>
+                    <div class="controls">
+                        <input id="class_input" type="text" placeholder="name1,name2...">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="btn_save_class">Save changes</button>
+                </div>
+
+
+                <div class="modal-header">
+                    <h3>Change Password <span class="extra-title muted"></span></h3>
+                </div>
+                <div class="modal-body form-horizontal">
+                    <div class="control-group">
+                        <label for="current_password" class="control-label">Current Password</label>
+                        <div class="controls">
+                            <input id="curr_pwd" type="password" name="current_password">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label for="new_password" class="control-label">New Password</label>
+                        <div class="controls">
+                            <input id="new_pwd" type="password" name="new_password">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label for="confirm_password" class="control-label">Confirm Password</label>
+                        <div class="controls">
+                            <input  id="cfm_pwd" type="password" name="confirm_password">
+                        </div>
+                    </div>      
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="btn_back">Back</button>
+                    <button class="btn btn-primary" id="btn_save">Save changes</button>
+                </div>
+            </div>
+            <script type="text/javascript">
+                $("#btn_save").click(function(){
+                   var new_pwd = $('#new_pwd').val();
+                   var curr_pwd = $('#curr_pwd').val();
+                   var cfm_pwd = $('#cfm_pwd').val();
+                   if(!new_pwd | !cfm_pwd | !cfm_pwd){
+                       alert("All fields required.");
+                       return;
+                   }
+                   if(new_pwd != cfm_pwd){
+                       alert("Passwords mismatch.");
+                       return;
+                   }
+                   $.post( "config", {"curr_pwd":curr_pwd, "new_pwd":new_pwd}, function( data ) {
+                        window.location = "admin";
+                    }, "json" ).fail(function() {
+                        window.location = "config?error=e03";
+                    });
+                });
+
+                $("#btn_back").click(function(){
+                    window.location = "admin";
+                });
+
+                $('#btn_reset').click(function(){
+                    $.get( "clear", function( data ) {
+                        alert("Cleared successfully");
+                        update_stats();
+                    }, "json" ).fail(function() {
+                        alert("Sorry, Invalid request.");
+                    });
+                });
+
+                $("#btn_save_class").click(function(){
+                    var new_classes = $('#class_input').val();
+                    if(!new_classes){
+                        alert("Please input at least a class");
+                    }
+                    $.post( "get-config-info", {"classes":new_classes}, function( data ) {
+                        //...
+                        alert("Saved successfully");
+                    }, "json" ).fail(function() {
+                        window.location = "config?error=e05";
+                    });
+                });
+
+                $( document ).ready(function() {
+                    update_stats();
+                    get_config_info();
+                });
+
+                function update_stats(){ //TODO: Change short fix.
+                    $.get( "get-stats/13373", function( data ) {
+                        //console.log(data);  
+                        if(data['stats']==""){ //if end ofimage pool
+                            $('#approved').html(0);
+                            $('#pending').html(0);
+                            $('#rejected').html(0);
+                            $('#balance').html(0);
+                            alert("No stats available.");
+                            return;
+                        }
+                        $('#approved').html(data['stats']['approved']);
+                        $('#pending').html(data['stats']['pending']);
+                        $('#rejected').html(data['stats']['rejected']);
+                        $('#balance').html(data['stats']['balance']);
+                    }, "json" ).fail(function() {
+                        alert("Sorry, Invalid request.");
+                    });
+                }
+
+                function get_config_info(){
+                    $.get( "get-config-info/", function( data ) {
+                        console.log(data);
+                        $("#class_input").val(data["classes"]);
+                    }, "json" ).fail(function() {
+                        alert("Sorry, Invalid request.");
+                    });
+                }
+
+            </script>
+    </body>
+
+</html>

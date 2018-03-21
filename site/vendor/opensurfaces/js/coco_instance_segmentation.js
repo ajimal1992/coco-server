@@ -67,6 +67,8 @@ Ctrler.prototype.renderHint = function(){
             ctx.fillStyle = 'rgba(0,0,255, 0.5)';
             ctx.stroke();
             ctx.fill();
+            // ctx.strokeText("sd",100,20);
+            // console.log(ctx);
         }
         //ctx.drawImage(ctrler.im, left-15, top-15, 30, 30);
         // }
@@ -121,8 +123,8 @@ Ctrler.prototype.submit_form = function(data_callback) {
       if ((feedback != null) && !$.isEmptyObject(feedback)) {
         data.feedback = JSON.stringify(feedback);
       }
-      console.log("submit data:");
-      console.log(data);
+      //console.log("submit data:");
+      //console.log(data);
       //debugger;
       var data = $.extend(true, {
                     screen_width: screen.width,
@@ -143,31 +145,70 @@ Ctrler.prototype.submit_form = function(data_callback) {
         $("input[name='ans']").val(ans);
         $("input[name='isObj']").val(1);
        // $('#mturk_form').submit();
-       if(window.min_shapes == 0){
+       //@aji next/start logic
            //change text to next, change min shapes = 1
-           window.min_shapes = 1;
-           $( "#btn-submit" ).html('Next');
-       }
-       else{
-           //send poly data
-           //...
-       }
-       //grab image
+        if(!$.trim($("#uname").val()).length){ //if input is empty
+            alert("Please enter your username.");
+            return;
+        }
+        //else
+        var user = $.trim($("#uname").val());
+        if(window.min_shapes == 0){ //if first time getting image
+            $.get( "get-image/"+user, function( data ) {
+                //console.log(data);  
+                if(data['image']==""){ //if end ofimage pool
+                    alert("No image available.");
+                    return;
+                }
+                //else
+                document.removeEventListener("keydown", keyDownTextField, false);
+                change_start_to_next();
+                $('#uname').prop('disabled', true);
+                update_canvas(data['image'], data['class']);
+                update_stats(user);
+            }, "json" ).fail(function() {
+                alert("Sorry, Invalid request.");
+            });
+        }
+        else{ //else send poly cord. and update canvas
+            //send poly...
+            //update_canvas(data['image']);
+            var cordinates = JSON.parse(data['results']);
+            //console.log(cordinates['poly_cord']);
 
-       //check for start or next
+            var get_image = "no";
+            if (confirm("Do you want to get another image?")) {
+                get_image = "yes";
+            }
 
-
+            var curr_image = window.template_args.photo_url.substr(window.template_args.photo_url.lastIndexOf('/') + 1);
+            $.post( "update-image", { "get_image":get_image, "user": user, "polys": cordinates['poly_cord'], "image":curr_image, "class":$('#class_name').html()}, function( data ) {
+                update_canvas(data['image'], data['class']);
+                update_stats(user);
+                if(get_image == "no"){
+                    return;
+                }
+                if(data['image']==""){ //if end ofimage pool
+                    alert("No image available.");
+                    return;
+                }
+            }, "json").fail(function() {
+                alert("Sorry, Invalid request.");
+            });
+            
+            
+        }
        //when user clicks next, go to next image
-        $("#mt-container").empty();
-        window.template_args = { //@aji-note change image
-            photo_url: "vendor/images/demo/cat.jpg",
-            photo_id: 3
-        };
-        template_args.width = $('#mt-container').width() - 4;
-        template_args.height = $(window).height() - $('#mt-top-nohover').height() - 16;
-        template_args.container_id = 'mt-container';
-        $('#poly-container').width(template_args.width).height(template_args.height);
-        window.controller_ui = new ControllerUI(template_args);
+        // $("#mt-container").empty();
+        // window.template_args = { //@aji-note change image
+        //     photo_url: "vendor/images/demo/cat.jpg",
+        //     photo_id: 3
+        // };
+        // template_args.width = $('#mt-container').width() - 4;
+        // template_args.height = $(window).height() - $('#mt-top-nohover').height() - 16;
+        // template_args.container_id = 'mt-container';
+        // $('#poly-container').width(template_args.width).height(template_args.height);
+        // window.controller_ui = new ControllerUI(template_args);
         //render hint
         /*
         polys = [[0.17821553290059533,0.4564724718351938,0.1601562393003034,0.4472112956299159,0.14904282785396986,0.4342456489425268,0.14904282785396986,0.42313223749619333,0.13654023997684467,0.4064621203266931,0.135151063546053,0.36015623930030344,0.14765365142317816,0.3119981230328583,0.1448752985615948,0.28977130014019126,0.13237271068446962,0.2656922420064687,0.1309835342536779,0.24531765435485722,0.13654023997684467,0.21753412573902353,0.15043200428476153,0.21197742001585673,0.18377223862376202,0.24161318387274608,0.21711247296276254,0.2527265953190796,0.29351717665630533,0.2397609486316905,0.3171331759797641,0.2397609486316905,0.3449167045955978,0.228647537185357,0.40048376182726525,0.24902212483696842,0.4477157604741826,0.228647537185357,0.5074503469982252,0.22679530194430142,0.5769091685378096,0.22679530194430142,0.6533138722313524,0.25643106580119074,0.7102701058938116,0.28051012393491337,0.775561398141021,0.3231115344791918,0.8519661018345637,0.3879397679161372,0.8589119839885221,0.46573364804047174,0.8630795132808972,0.5416752929237507,0.8561336311269389,0.5805722329859179,0.8575228075577305,0.6213214082891407,0.8533552782653554,0.6528094073870856,0.8186258674955632,0.6435482311818077,0.7936206917413128,0.6435482311818077,0.7422211638020204,0.673183995038697,0.7269402230633119,0.673183995038697,0.5991359914304766,0.6305825844944186,0.5921901092765182,0.6046512911196404,0.6005251678612683,0.5916856444322514,0.5991359914304766,0.5639021158164177,0.6171952850307686,0.5527887043700841,0.6033035207228516,0.5379708224416394,0.5519039927835593,0.5287096462363615,0.5116178762906003,0.5046305881026389,0.45049411333576606,0.4675858832815273,0.4199322318583489,0.4472112956299159,0.39214870324251516,0.41016659080880424,0.34213835173401447,0.39720094412141516,0.268512000902055,0.38423529743402607,0.22266917868592925,0.39905317936247076,0.20738823794722072,0.4305411784604156,0.1879397679161371,0.45276800135308265]];
@@ -193,6 +234,7 @@ Ctrler.prototype.addListener = function(){
         //return stop_event(ev);
     });
     $(document).keydown(function(ev){
+        // console.log("ssdsdsd");
         if (ev.keyCode == 77 || ev.keyCode == 109){
             $('#btn-move').trigger('click');
         }else if(ev.keyCode == 73 || ev.keyCode == 105){
@@ -204,6 +246,7 @@ Ctrler.prototype.addListener = function(){
     } );
     $('#btn-submit-noobj').bind('click', ctrler.submitNoObj);
     $(document).keypress( function(ev){
+        // console.log("sasd");
         if (ev.keyCode == 37 || ev.keyCode == 38){
             setTimeout(function(){
                 ctrler.renderHint();}, 100);
@@ -268,6 +311,56 @@ function getbbox(poly){
     }
     return {'x_min':x_min, 'x_max':x_max, 'y_min':y_min, 'y_max':y_max,}
 }
+
+function change_start_to_next(){
+    var user = $.trim($("#uname").val());
+    window.min_shapes = 1;
+    $( "#btn-submit" ).html('Next');
+}
+function update_canvas(image_path, class_name, listener_option=true){
+    $("#mt-container").empty();
+    window.template_args = { 
+        photo_url: "/image_pool/" + image_path,
+        photo_id: "poly_cord",
+        listener: listener_option
+    };
+    template_args.width = $('#mt-container').width() - 4;
+    template_args.height = $(window).height() - $('#mt-top-nohover').height() - 16;
+    template_args.container_id = 'mt-container';
+    $('#poly-container').width(template_args.width).height(template_args.height);
+    window.controller_ui = new ControllerUI(template_args); //this might be straining on the memory. TODO: Try improve this?
+    console.log(class_name);
+    $('#class_name').html(class_name);
+}
+
+function update_stats(user, show_username=false){
+    $.get( "get-stats/"+user, function( data ) {
+        //console.log(data);  
+        if(data['stats']==""){ //if end ofimage pool
+            alert("No stats available.");
+            return;
+        }
+
+        $('#approved').html(data['stats']['approved']);
+        $('#pending').html(data['stats']['pending']);
+        $('#rejected').html(data['stats']['rejected']);
+        if(show_username){
+            $('#username').html(data['user']);
+        }
+    }, "json" ).fail(function() {
+        alert("Sorry, Invalid request.");
+    });
+}
+
+function clear_stats(show_username=false){
+    $('#approved').html(0);
+    $('#pending').html(0);
+    $('#rejected').html(0);
+    if(show_username){
+        $('#username').html(0);
+    }
+}
+
 // windows
 var ctrler;
 $(window).load(function(){
@@ -276,8 +369,8 @@ $(window).load(function(){
     ctrler = new Ctrler();
     ctrler.N = 1;
     // redner things
-    ctrler.renderHint();
+    //ctrler.renderHint();
     // ctrler.centerIcon();
     ctrler.addListener();
-    window.controller_ui.s.stage_ui.layer.afterDrawFunc = ctrler.renderHint
+    //window.controller_ui.s.stage_ui.layer.afterDrawFunc = ctrler.renderHint
 });

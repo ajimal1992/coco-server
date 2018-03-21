@@ -1,0 +1,178 @@
+<!--
+This segmentation UI was modified from OpenSurfaces project by S. Bell et al.:
+https://github.com/seanbell/opensurfaces
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+	<link href="vendor/opensurfaces/css/jquery-ui-1.9.1.custom.min.css" rel="stylesheet" type="text/css"/>
+	<link href="vendor/opensurfaces/css/bootstrap-2.2.1.min.css" rel="stylesheet" type="text/css"/>
+	<link href="vendor/opensurfaces/css/mturk.css" rel="stylesheet" type="text/css" />
+
+	<style>
+		canvas { border: 1px solid #969696; }
+		body { padding: 0 }
+    </style>
+    <!-- BEGIN: OPENSURFACE ADD-ON, ADDED BY Tsung-Yi Lin -->
+    <link href="vendor/css/coco_instance_spotting.css" rel="stylesheet" type="text/css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript" src="vendor/opensurfaces/js/coco_instance_segmentation.js"></script>
+    <script>
+        var STATIC_ROOT = 'vendor';
+        var init_time = $.now();
+        var Anno = [];
+        // instance annotations that were collected from the instance spotting stage
+        //Anno.push([0.3,0.5]);
+
+        // there is a cat has been annotated before (shown in blue) in the demo
+        // the workers should progressive annotate all cats in the image
+        // the interface should show instance segmentation specified by:
+        // polys: [polygon1, polygon2]
+        // polygon: [x1,y1,x2,y2,...,xn,yn] x, y are fractions of image width and height
+		var polys = [];
+    </script>
+    <!-- END: OPENSURFACE ADD-ON, ADDED BY Tsung-Yi Lin -->
+
+</head>
+<body data-spy="scroll" data-target=".navbar" data-offset="50">
+<!-- BEGIN MAIN UI -->
+	<div id='content-container'>
+		<div id="mt-top-nohover">
+            <div class="ui-controls-top" style="margin-top:20px">
+                <div class="ui-controls-top">
+                <button class="btn btn-primary" id="btn-change_pwd">Configuration</button>
+                <!-- </div> -->
+                <!-- <div class="ui-con trols-top"> -->
+                <button class="btn btn-primary" id="btn-download">Download JSON</button>
+                <button class="btn btn-primary" id="btn-logout" style="float:right;">Logout</button>
+                </div>
+                <div class="ui-controls-top">
+                <button class="btn btn-primary" id="btn-approve">Approve</button>
+                <button class="btn btn-primary" id="btn-reject">Reject</button>
+                <br><br>
+                    <div style='font-size:14pt'>
+                        <span>Labelling for: </span><span id="class_name" class="badge badge-pill badge-secondary" style="font-size: large;"></span><br>
+                        <span>User: </span><span id="username" class="badge badge-pill badge-secondary" style="font-size: large;"></span><br>
+                        <span>Approved: </span><span id="approved" class="badge badge-pill badge-secondary" style="font-size: large;"></span>
+                        <span style="margin-left:15px">Rejected: </span><span id="rejected" class="badge badge-pill badge-secondary" style="font-size: large;"></span>
+                        <span style="margin-left:15px">Pending: </span><span id="pending" class="badge badge-pill badge-secondary" style="font-size: large;"></span>
+                        <br>
+                    </div>
+                </div>
+            </div>
+		</div>
+		<div id="mt-container"></div>
+    </div>
+<!-- END MAIN UI -->
+
+<!-- BEGIN MAIN SCRIPTS -->
+	<script type="text/javascript">
+		/* photo_url:  URL of the photo to be shown
+		   photo_id: database ID of the photo being segmented.  The results
+		   will be returned in a JSON object with the format:
+ 		       {"photo_id": [[x1,y1,x2,y2,...], [x1,y1,x2,y2,...]]}
+ 		   otherwise, photo_id is not used.
+ 		*/
+         // giving a fake photo_id
+
+        $("#btn-download").click(function(){
+            window.location = "get-json";
+        });
+
+        $("#btn-change_pwd").click(function(){
+            window.location = "config";
+        });
+
+        $("#btn-logout").click(function(){
+            $.get( "logout", function(data){
+                window.location = "login";
+            });
+        });
+
+        $( "#btn-approve" ).click(function() {
+			// polys = [[0.17821553290059533,0.4564724718351938,0.1601562393003034,0.4472112956299159,0.14904282785396986,0.4342456489425268,0.14904282785396986,0.42313223749619333,0.13654023997684467,0.4064621203266931,0.135151063546053,0.36015623930030344,0.14765365142317816,0.3119981230328583,0.1448752985615948,0.28977130014019126,0.13237271068446962,0.2656922420064687,0.1309835342536779,0.24531765435485722,0.13654023997684467,0.21753412573902353,0.15043200428476153,0.21197742001585673,0.18377223862376202,0.24161318387274608,0.21711247296276254,0.2527265953190796,0.29351717665630533,0.2397609486316905,0.3171331759797641,0.2397609486316905,0.3449167045955978,0.228647537185357,0.40048376182726525,0.24902212483696842,0.4477157604741826,0.228647537185357,0.5074503469982252,0.22679530194430142,0.5769091685378096,0.22679530194430142,0.6533138722313524,0.25643106580119074,0.7102701058938116,0.28051012393491337,0.775561398141021,0.3231115344791918,0.8519661018345637,0.3879397679161372,0.8589119839885221,0.46573364804047174,0.8630795132808972,0.5416752929237507,0.8561336311269389,0.5805722329859179,0.8575228075577305,0.6213214082891407,0.8533552782653554,0.6528094073870856,0.8186258674955632,0.6435482311818077,0.7936206917413128,0.6435482311818077,0.7422211638020204,0.673183995038697,0.7269402230633119,0.673183995038697,0.5991359914304766,0.6305825844944186,0.5921901092765182,0.6046512911196404,0.6005251678612683,0.5916856444322514,0.5991359914304766,0.5639021158164177,0.6171952850307686,0.5527887043700841,0.6033035207228516,0.5379708224416394,0.5519039927835593,0.5287096462363615,0.5116178762906003,0.5046305881026389,0.45049411333576606,0.4675858832815273,0.4199322318583489,0.4472112956299159,0.39214870324251516,0.41016659080880424,0.34213835173401447,0.39720094412141516,0.268512000902055,0.38423529743402607,0.22266917868592925,0.39905317936247076,0.20738823794722072,0.4305411784604156,0.1879397679161371,0.45276800135308265]];
+            // window.controller_ui.s.stage_ui.layer.afterDrawFunc = ctrler.renderHint;
+            var curr_image = window.template_args.photo_url.substr(window.template_args.photo_url.lastIndexOf('/') + 1);
+			$.post( "approve-image", {"image":curr_image, "approved":"yes", "class":$('#class_name').html()}, function( data ) {
+                //update canvas
+                update_canvas(data['image'],data['class'], false);                
+                if(data['image']==""){ //if end ofimage pool
+                    alert("No image available.");
+                    clear_stats(true);
+                    return;
+                }
+                update_stats(data['user'],true);
+                render_polys(data['polys']);
+            }, "json" ).fail(function() {
+                alert("Sorry, Invalid request.");
+            });
+        });
+        
+        $( "#btn-reject" ).click(function() {
+			// polys = [[0.17821553290059533,0.4564724718351938,0.1601562393003034,0.4472112956299159,0.14904282785396986,0.4342456489425268,0.14904282785396986,0.42313223749619333,0.13654023997684467,0.4064621203266931,0.135151063546053,0.36015623930030344,0.14765365142317816,0.3119981230328583,0.1448752985615948,0.28977130014019126,0.13237271068446962,0.2656922420064687,0.1309835342536779,0.24531765435485722,0.13654023997684467,0.21753412573902353,0.15043200428476153,0.21197742001585673,0.18377223862376202,0.24161318387274608,0.21711247296276254,0.2527265953190796,0.29351717665630533,0.2397609486316905,0.3171331759797641,0.2397609486316905,0.3449167045955978,0.228647537185357,0.40048376182726525,0.24902212483696842,0.4477157604741826,0.228647537185357,0.5074503469982252,0.22679530194430142,0.5769091685378096,0.22679530194430142,0.6533138722313524,0.25643106580119074,0.7102701058938116,0.28051012393491337,0.775561398141021,0.3231115344791918,0.8519661018345637,0.3879397679161372,0.8589119839885221,0.46573364804047174,0.8630795132808972,0.5416752929237507,0.8561336311269389,0.5805722329859179,0.8575228075577305,0.6213214082891407,0.8533552782653554,0.6528094073870856,0.8186258674955632,0.6435482311818077,0.7936206917413128,0.6435482311818077,0.7422211638020204,0.673183995038697,0.7269402230633119,0.673183995038697,0.5991359914304766,0.6305825844944186,0.5921901092765182,0.6046512911196404,0.6005251678612683,0.5916856444322514,0.5991359914304766,0.5639021158164177,0.6171952850307686,0.5527887043700841,0.6033035207228516,0.5379708224416394,0.5519039927835593,0.5287096462363615,0.5116178762906003,0.5046305881026389,0.45049411333576606,0.4675858832815273,0.4199322318583489,0.4472112956299159,0.39214870324251516,0.41016659080880424,0.34213835173401447,0.39720094412141516,0.268512000902055,0.38423529743402607,0.22266917868592925,0.39905317936247076,0.20738823794722072,0.4305411784604156,0.1879397679161371,0.45276800135308265]];
+            // window.controller_ui.s.stage_ui.layer.afterDrawFunc = ctrler.renderHint;
+            var curr_image = window.template_args.photo_url.substr(window.template_args.photo_url.lastIndexOf('/') + 1);
+			$.post( "approve-image", {"image":curr_image, "approved":"no", "class":$('#class_name').html()}, function( data ) {
+                //update canvas
+                update_canvas(data['image'],data['class'], false);
+                if(data['image']==""){ //if end ofimage pool
+                    alert("No image available.");
+                    clear_stats(true);
+                    return;
+                }
+                update_stats(data['user'],true);
+                render_polys(data['polys']);
+            }, "json" ).fail(function() {
+                alert("Sorry, Invalid request.");
+            });
+		});
+         
+		window.template_args = { //@aji-note static image
+            // BEGIN: OPENSURFACE ADD-ON, ADDED BY Tsung-Yi Lin
+            // photo_url: "vendor/images/demo/download.jpg",
+            // photo_id: 1,
+            listener: false
+            // END: OPENSURFACE ADD-ON, ADDED BY Tsung-Yi Lin
+		};
+
+		// the user must submit this many shapes before they may submit:
+		window.min_shapes = 0;
+
+		// each polygon must have at least this many vertices:
+		window.min_vertices = 4;
+        $(window).load(function(){
+            $.get( "get-completed-image/", function( data ) {
+                //console.log(data);  
+                update_canvas(data['image'],data['class'], false);
+                if(data['image']==""){ //if end ofimage pool
+                    alert("No image available.");
+                    return;
+                }
+                //update canvas
+                update_stats(data['user'],true);
+                render_polys(data['polys']);
+            }, "json" ).fail(function() {
+                alert("Sorry, Invalid request.");
+            });
+        });
+
+        function render_polys(cord){
+            polys = cord;
+            ctrler.renderHint();
+            window.controller_ui.s.stage_ui.layer.afterDrawFunc = ctrler.renderHint;
+        }
+	</script>
+
+	<!-- merged libraries -->
+
+	<script type="text/javascript" src="vendor/opensurfaces/js/build-js.js"></script>
+	<!-- compiled coffeescript -->
+    <script type="text/javascript" src="vendor/opensurfaces/js/build-coffee-coco.js"></script>
+<!-- END MAIN SCRIPTS -->
+
+</body>
+</html>

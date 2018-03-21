@@ -576,7 +576,7 @@ PolygonUI = (function() {
     }
   };
 
-  PolygonUI.prototype.add_text = function() {
+  PolygonUI.prototype.add_text = function() { //@aji
     var cen, label, pos;
     cen = this.poly.labelpos();
     label = String(this.id + 1);
@@ -771,77 +771,104 @@ ControllerUI = (function() {
 
   function ControllerUI(args) {
     var _this = this;
+    var listener = false;
+    if(args.listener==false){
+      listener = true;
+    }
     this.on_photo_loaded = function() {
-      return ControllerUI.prototype.on_photo_loaded.apply(_this, arguments);
+      if(listener) return false
+			return ControllerUI.prototype.on_photo_loaded.apply(_this, arguments);
     };
     this.toggle_mode = function() {
-      return ControllerUI.prototype.toggle_mode.apply(_this, arguments);
+      if(listener) return false
+			return ControllerUI.prototype.toggle_mode.apply(_this, arguments);
     };
     this.drag_valid = function(i) {
-      return ControllerUI.prototype.drag_valid.apply(_this, arguments);
+      if(listener) return false
+			return ControllerUI.prototype.drag_valid.apply(_this, arguments);
     };
     this.finish_drag_point = function(i, p) {
-      return ControllerUI.prototype.finish_drag_point.apply(_this, arguments);
+      if(listener) return false
+			return ControllerUI.prototype.finish_drag_point.apply(_this, arguments);
     };
     this.progress_drag_point = function(i, p) {
-      return ControllerUI.prototype.progress_drag_point.apply(_this, arguments);
+      if(listener) return false
+			return ControllerUI.prototype.progress_drag_point.apply(_this, arguments);
     };
     this.revert_drag_point = function(i) {
-      return ControllerUI.prototype.revert_drag_point.apply(_this, arguments);
+      if(listener) return false
+			return ControllerUI.prototype.revert_drag_point.apply(_this, arguments);
     };
     this.start_drag_point = function(i) {
-      return ControllerUI.prototype.start_drag_point.apply(_this, arguments);
+      if(listener) return false
+			return ControllerUI.prototype.start_drag_point.apply(_this, arguments);
     };
     this.delete_sel_poly = function() {
-      return ControllerUI.prototype.delete_sel_poly.apply(_this, arguments);
+      if(listener) return false
+			return ControllerUI.prototype.delete_sel_poly.apply(_this, arguments);
     };
     this.remove_open_poly = function(id) {
-      return ControllerUI.prototype.remove_open_poly.apply(_this, arguments);
+      if(listener) return false
+			return ControllerUI.prototype.remove_open_poly.apply(_this, arguments);
     };
     this.unselect_poly = function(id) {
-      return ControllerUI.prototype.unselect_poly.apply(_this, arguments);
+      if(listener) return false
+			return ControllerUI.prototype.unselect_poly.apply(_this, arguments);
     };
     this.select_poly = function(id) {
-      return ControllerUI.prototype.select_poly.apply(_this, arguments);
+      if(listener) return false
+			return ControllerUI.prototype.select_poly.apply(_this, arguments);
     };
     this.close_poly = function() {
-      return ControllerUI.prototype.close_poly.apply(_this, arguments);
+      if(listener) return false
+			return ControllerUI.prototype.close_poly.apply(_this, arguments);
     };
     this.update = function() {
-      return ControllerUI.prototype.update.apply(_this, arguments);
+      if(listener) return false
+			return ControllerUI.prototype.update.apply(_this, arguments);
     };
     this.mousemove = function(e) {
-      return ControllerUI.prototype.mousemove.apply(_this, arguments);
+      if(listener) return false
+			return ControllerUI.prototype.mousemove.apply(_this, arguments);
     };
     this.mouseup = function(e) {
-      return ControllerUI.prototype.mouseup.apply(_this, arguments);
+      if(listener) return false
+			return ControllerUI.prototype.mouseup.apply(_this, arguments);
     };
     this.mousedown = function(e) {
-      return ControllerUI.prototype.mousedown.apply(_this, arguments);
+      if(listener) return false
+			return ControllerUI.prototype.mousedown.apply(_this, arguments);
     };
     this.click = function(e) {
-      return ControllerUI.prototype.click.apply(_this, arguments);
+      if(listener) return false
+			return ControllerUI.prototype.click.apply(_this, arguments);
     };
     this.zoom_reset = function(e) {
-      return ControllerUI.prototype.zoom_reset.apply(_this, arguments);
+      if(listener) return false
+			return ControllerUI.prototype.zoom_reset.apply(_this, arguments);
     };
     this.wheel = function(e) {
-      return ControllerUI.prototype.wheel.apply(_this, arguments);
+      if(listener) return false
+			return ControllerUI.prototype.wheel.apply(_this, arguments);
     };
     this.blur = function(e) {
-      return ControllerUI.prototype.blur.apply(_this, arguments);
+      if(listener) return false
+			return ControllerUI.prototype.blur.apply(_this, arguments);
     };
     this.keyup = function(e) {
-      return ControllerUI.prototype.keyup.apply(_this, arguments);
+      if(listener) return false
+			return ControllerUI.prototype.keyup.apply(_this, arguments);
     };
     this.keydown = function(e) {
-      return ControllerUI.prototype.keydown.apply(_this, arguments);
+      if(listener) return false
+			return ControllerUI.prototype.keydown.apply(_this, arguments);
     };
     this.set_photo = function(photo_url) {
-      return ControllerUI.prototype.set_photo.apply(_this, arguments);
+			return ControllerUI.prototype.set_photo.apply(_this, arguments);
     };
     this.get_submit_data = function() {
-      return ControllerUI.prototype.get_submit_data.apply(_this, arguments);
+      if(listener) return false
+			return ControllerUI.prototype.get_submit_data.apply(_this, arguments);
     };
     this.s = new ControllerState(this, args);
     $(document).on('contextmenu', function(e) {
