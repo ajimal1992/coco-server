@@ -25,7 +25,7 @@ A modified COCO training software using the example provided by https://github.c
 6. Browse to - http://localhost:55555/
 
 ## Setting up as a service
-<TODO>
+TODO. Will write this later.
     
 ## Feature Guide
 ### Roles
