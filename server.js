@@ -66,7 +66,6 @@ app.use('/',express.static(path.join(__dirname, config.SITE_DIR)));
 
 //sessions
 var session = require('express-session');
-var expiryDate = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
 app.use(session({
     secret: "53CRE7",
     name: 'session',
@@ -75,7 +74,7 @@ app.use(session({
     cookie: {
         secure: false,
         httpOnly: true,
-        expires: expiryDate
+        maxAge: 60*60*1000
     }
 }))
 
@@ -144,9 +143,17 @@ app.post(config.LOGIN_ROUTE, function (req, res) {
     // users.update_password(input_un,input_pw);
     users.auth_admin(input_un,input_pw,function(success){
         if(success){
+            // req.session.touch();
+            req.sessionStore.clear(function(error){
+                if(error){
+                    res.redirect(config.LOGIN_ROUTE+"?error=e06");
+                }
+                else{
             req.session.username = input_un;
             req.session.state = 1;
             res.redirect(config.ADMIN_ROUTE);
+        }
+            });
         }
         else{
             //clearSession(req);
@@ -606,6 +613,11 @@ function renderView(res,FILE){
 
 function authorized(req,res,callback){
     //console.log(req);
+    // console.log("REQUEST: " + req.url);
+    // console.log("SESSIONID: " + req.sessionID);
+    // console.log("===========SESSIONS=============");
+    // console.log(req.sessionStore.sessions);
+    // console.log("================================");
     if (req.session.state === 1) {
         callback();
     }
