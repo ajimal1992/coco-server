@@ -107,7 +107,7 @@
                     }
                     $.post( "get-config-info", {"classes":new_classes}, function( data ) {
                         //...
-                        alert("Saved successfully");
+                        alert("Saved successfully. \nNOTE: Please clear staging data.");
                     }, "json" ).fail(function() {
                         window.location = "config?error=e05";
                     });
