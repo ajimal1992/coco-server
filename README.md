@@ -40,9 +40,9 @@ This software is limited/catered to _multiple_ human annotators and _one_ admin.
     - On the general section, you can see the statistics of images
     - Ideally, everything should be 0 except Approved
     - You can clear images by clicking on the clear staging data.
-        - Note: It is very imporant to ensure that you clear the data when you change your classes. Pleas remember the clearing data would delete your annotations.
+        - Note: It is very imporant to ensure that you clear the data when you change your classes. Please remember the clearing data would delete your annotations.
 
- - You can add images forannotation at ./images/image_pool/.
+ - You can add images for annotation at ./images/image_pool/.
  - Add annotators at ./users/users.js. Edit the `ALL_USERS` list to add more annotators.
     - Note: Restart server when adding new users.
 
