@@ -316,6 +316,7 @@ function change_start_to_next(){
     var user = $.trim($("#uname").val());
     window.min_shapes = 1;
     $( "#btn-submit" ).html('Next');
+    $( "#btn-no_obj").removeAttr("disabled");
 }
 function update_canvas(image_path, class_name, listener_option=true){
     $("#mt-container").empty();

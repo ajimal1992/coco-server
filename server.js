@@ -179,7 +179,7 @@ app.post("/update-image", function(req, res){
     var get_image = req.body.get_image;
     // console.log(get_image);
 
-    if(!image || !polys || !user){
+    if(!image || !user){
         res.status(400);
         res.json({user:""});
         return;
@@ -461,6 +461,9 @@ app.get("/get-json", function(req, res){
                 for(var i=0; i<response.length; i++){
                     var tmp_json = {};
                     var polys = response[i]["polys"];
+                    if(polys.length==0){
+                        continue;
+                    }
                     //denormalize polys
                     for(var x=0; x<polys.length; x++){
                         var poly = polys[x];
