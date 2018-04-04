@@ -367,6 +367,7 @@ var ctrler;
 $(window).load(function(){
     // append a invisible annotation
     // set up things
+    
     ctrler = new Ctrler();
     ctrler.N = 1;
     // redner things

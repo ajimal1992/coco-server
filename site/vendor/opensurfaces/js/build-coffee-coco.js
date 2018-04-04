@@ -844,7 +844,7 @@ ControllerUI = (function() {
 			return ControllerUI.prototype.click.apply(_this, arguments);
     };
     this.zoom_reset = function(e) {
-      if(listener) return false
+      //if(listener) return false
 			return ControllerUI.prototype.zoom_reset.apply(_this, arguments);
     };
     this.wheel = function(e) {
@@ -856,11 +856,11 @@ ControllerUI = (function() {
 			return ControllerUI.prototype.blur.apply(_this, arguments);
     };
     this.keyup = function(e) {
-      if(listener) return false
+      //if(listener) return false
 			return ControllerUI.prototype.keyup.apply(_this, arguments);
     };
     this.keydown = function(e) {
-      if(listener) return false
+      //if(listener) return false
 			return ControllerUI.prototype.keydown.apply(_this, arguments);
     };
     this.set_photo = function(photo_url) {
