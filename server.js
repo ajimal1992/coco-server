@@ -330,7 +330,9 @@ app.get("/get-completed-image",function(req, res){
                     json["image"] = response[0]["image"];
                     json["polys"] = response[0]["polys"];
                     json["class"] = response[0]["class"];
-                    json["remarks"] = response[0]["remarks"];
+                    if(response[0].hasOwnProperty("remarks")){
+                        json["remarks"] = response[0]["remarks"];
+                    }
                     res.status(200);
                     res.json(json);
                 }
@@ -481,8 +483,10 @@ app.get("/get-json", function(req, res){
                     tmp_json[response[i]["class"]] = polys;
                     tmp_json["image"] = response[i]["image"];
                     tmp_json["user"] = response[i]["user"];
-                    if(!(response[i]["remarks"]=="")){
-                        tmp_json["remarks"] = response[i]["remarks"];
+                    if(response[i].hasOwnProperty("remarks")){
+                        if(!(response[i]["remarks"]=="")){
+                            tmp_json["remarks"] = response[i]["remarks"];
+                        }
                     }
                     json_list.push(tmp_json);
                 }
