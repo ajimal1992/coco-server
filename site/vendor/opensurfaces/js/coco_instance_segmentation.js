@@ -161,7 +161,7 @@ Ctrler.prototype.submit_form = function(data_callback) {
                     return;
                 }
                 //else
-                document.removeEventListener("keydown", keyDownTextField, false);
+                //document.removeEventListener("keydown", keyDownTextField, false);
                 change_start_to_next();
                 $('#uname').prop('disabled', true);
                 update_canvas(data['image'], data['class']);
@@ -182,7 +182,7 @@ Ctrler.prototype.submit_form = function(data_callback) {
             }
 
             var curr_image = window.template_args.photo_url.substr(window.template_args.photo_url.lastIndexOf('/') + 1);
-            $.post( "update-image", { "get_image":get_image, "user": user, "polys": cordinates['poly_cord'], "image":curr_image, "class":$('#class_name').html()}, function( data ) {
+            $.post( "update-image", { "get_image":get_image, "user": user, "polys": cordinates['poly_cord'], "image":curr_image, "class":$('#class_name').html(), "remarks":$("#remarks").val()}, function( data ) {
                 update_canvas(data['image'], data['class']);
                 update_stats(user);
                 if(get_image == "no"){
@@ -332,6 +332,7 @@ function update_canvas(image_path, class_name, listener_option=true){
     window.controller_ui = new ControllerUI(template_args); //this might be straining on the memory. TODO: Try improve this?
     console.log(class_name);
     $('#class_name').html(class_name);
+    $('#remarks').val("");
 }
 
 function update_stats(user, show_username=false){

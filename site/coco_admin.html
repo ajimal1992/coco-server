@@ -66,6 +66,7 @@ https://github.com/seanbell/opensurfaces
                 <br><br>
                     <div style='font-size:14pt'>
                         <span>Labelling for: </span><span id="class_name" class="badge badge-pill badge-secondary" style="font-size: large;"></span><br>
+                        <span>Remarks: </span><span id="remarks" class="badge badge-pill badge-secondary" style="font-size: large;"></span><br>
                         <span>User: </span><span id="username" class="badge badge-pill badge-secondary" style="font-size: large;"></span><br>
                         <span>Approved: </span><span id="approved" class="badge badge-pill badge-secondary" style="font-size: large;"></span>
                         <span style="margin-left:15px">Rejected: </span><span id="rejected" class="badge badge-pill badge-secondary" style="font-size: large;"></span>
@@ -115,6 +116,7 @@ https://github.com/seanbell/opensurfaces
                     clear_stats(true);
                     return;
                 }
+                $("#remarks").html(data["remarks"]);
                 update_stats(data['user'],true);
                 render_polys(data['polys']);
             }, "json" ).fail(function() {
@@ -134,6 +136,7 @@ https://github.com/seanbell/opensurfaces
                     clear_stats(true);
                     return;
                 }
+                $("#remarks").html(data["remarks"]);
                 update_stats(data['user'],true);
                 render_polys(data['polys']);
             }, "json" ).fail(function() {
@@ -162,6 +165,7 @@ https://github.com/seanbell/opensurfaces
                     alert("No image available.");
                     return;
                 }
+                $("#remarks").html(data["remarks"]);
                 //update canvas
                 update_stats(data['user'],true);
                 render_polys(data['polys']);

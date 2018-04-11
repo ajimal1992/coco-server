@@ -109,7 +109,7 @@ nosql_staging2.count().make(function(filter) {
                     for(var i=0; i<files.length; i++){
                         var dimensions = sizeOf('images/image_pool/' + files[i]);
                         // console.log(files[i],dimensions.width, dimensions.height);
-                        nosql_staging2.insert({"user":"", "polys": [], "image":files[i], "state":"AWAITING", "class":class_name, "width":dimensions.width,"height":dimensions.height});
+                        nosql_staging2.insert({"user":"", "polys": [], "image":files[i], "state":"AWAITING", "class":class_name, "width":dimensions.width,"height":dimensions.height, "remarks":""});
                     }
                 });
             });
@@ -177,6 +177,7 @@ app.post("/update-image", function(req, res){
     var image = req.body.image;
     var class_name = req.body.class;
     var get_image = req.body.get_image;
+    var remarks = escape(req.body.remarks);
     // console.log(get_image);
 
     if(!image || !user){
@@ -185,7 +186,7 @@ app.post("/update-image", function(req, res){
         return;
     }
 
-    nosql_staging2.modify({"polys":polys,state:"COMPLETED"}).make(function(filter) {
+    nosql_staging2.modify({"polys":polys,state:"COMPLETED", "remarks":remarks.trim()}).make(function(filter) {
     // builder.first(); --> updates only one document
         filter.where('image', image);
         filter.where('class', class_name)
@@ -274,12 +275,12 @@ app.get("/get-image/:user", function(req, res){
                                                 var dimensions = sizeOf('images/image_pool/' + files[i]);
                                                 // console.log(files[i],dimensions.width, dimensions.height);
                                                 if( i==0){ //reply request first.
-                                                    nosql_staging2.insert({"user":"", "polys": [], "image":files[i], "state":"AWAITING", "class":class_name, "width":dimensions.width,"height":dimensions.height}).callback(function(err,count){
+                                                    nosql_staging2.insert({"user":"", "polys": [], "image":files[i], "state":"AWAITING", "class":class_name, "width":dimensions.width,"height":dimensions.height, "remarks":""}).callback(function(err,count){
                                                         res.redirect("/get-image/" + user);
                                                     });
                                                 }
                                                 else{
-                                                    nosql_staging2.insert({"user":"", "polys": [], "image":files[i], "state":"AWAITING", "class":class_name, "width":dimensions.width,"height":dimensions.height});
+                                                    nosql_staging2.insert({"user":"", "polys": [], "image":files[i], "state":"AWAITING", "class":class_name, "width":dimensions.width,"height":dimensions.height, "remarks":""});
                                                 }
                                             }
                                         });
@@ -329,6 +330,7 @@ app.get("/get-completed-image",function(req, res){
                     json["image"] = response[0]["image"];
                     json["polys"] = response[0]["polys"];
                     json["class"] = response[0]["class"];
+                    json["remarks"] = response[0]["remarks"];
                     res.status(200);
                     res.json(json);
                 }
@@ -479,6 +481,9 @@ app.get("/get-json", function(req, res){
                     tmp_json[response[i]["class"]] = polys;
                     tmp_json["image"] = response[i]["image"];
                     tmp_json["user"] = response[i]["user"];
+                    if(!(response[i]["remarks"]=="")){
+                        tmp_json["remarks"] = response[i]["remarks"];
+                    }
                     json_list.push(tmp_json);
                 }
                 json["data"] = json_list;
@@ -564,7 +569,7 @@ app.get("/clear", function(req,res){
                                 for(var i=0; i<files.length; i++){
                                     var dimensions = sizeOf('images/image_pool/' + files[i]);
                                     // console.log(files[i],dimensions.width, dimensions.height);
-                                    nosql_staging2.insert({"user":"", "polys": [], "image":files[i], "state":"AWAITING", "class":class_name, "width":dimensions.width,"height":dimensions.height});
+                                    nosql_staging2.insert({"user":"", "polys": [], "image":files[i], "state":"AWAITING", "class":class_name, "width":dimensions.width,"height":dimensions.height, "remarks":""});
                                 }
                             });
                         });

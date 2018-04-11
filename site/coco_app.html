@@ -34,12 +34,12 @@ https://github.com/seanbell/opensurfaces
         // polys: [polygon1, polygon2]
         // polygon: [x1,y1,x2,y2,...,xn,yn] x, y are fractions of image width and height
 		var polys = [];
-		$( "#uname" ).keypress(function(e) {
-			e.preventDefault();
-			e.stopPropagation()
-			console.log( "Handler for .keypress() called." );
-			//@aji do something about events propagating
-		 });
+		// $( "#uname" ).keypress(function(e) {
+		// 	e.preventDefault();
+		// 	e.stopPropagation()
+		// 	console.log( "Handler for .keypress() called." );
+		// 	//@aji do something about events propagating
+		//  });
     </script>
     <!-- END: OPENSURFACE ADD-ON, ADDED BY Tsung-Yi Lin -->
 
@@ -110,7 +110,7 @@ https://github.com/seanbell/opensurfaces
 			<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true" id="btn-no_obj" disabled="disabled">No Objects Found</button>
                 <a href="#modal-examples" role="button" id='btn-example' class="btn btn-warning" data-toggle="modal">Examples</a>
 				<a href="#modal-instructions" role="button" class="btn btn-warning" id='btn-instructions' data-toggle="modal">Instructions</a>
-				<br /><br /><input type="text" id="uname" placeholder="Username">
+				<br /><br /><input type="text" id="uname" placeholder="Username"><input type="text" id="remarks" placeholder="Remarks" style="margin-left: 10px">
                 <div class="ui-controls-top" style='font-size:14pt'>
                 Tips: Using <span style='color:blue'>"Move to taget" (M) </span>  and <span style='color:blue'>"Zoom In" (I) </span> for the small object!  <br>
                 Use <span style='color:blue'>Ctrl-Z</span> to undo a click. <br>
@@ -495,7 +495,7 @@ https://github.com/seanbell/opensurfaces
             }
 
             var curr_image = window.template_args.photo_url.substr(window.template_args.photo_url.lastIndexOf('/') + 1);
-            $.post( "update-image", { "get_image":get_image, "user": user, "polys": [], "image":curr_image, "class":$('#class_name').html()}, function( data ) {
+            $.post( "update-image", { "get_image":get_image, "user": user, "polys": [], "image":curr_image, "class":$('#class_name').html(), "remarks":""}, function( data ) {
                 update_canvas(data['image'], data['class']);
                 update_stats(user);
                 if(get_image == "no"){
@@ -524,8 +524,14 @@ https://github.com/seanbell/opensurfaces
 		// each polygon must have at least this many vertices:
 		window.min_vertices = 4;
 		function keyDownTextField(e){
-			//console.log("asas");
-			e.stopImmediatePropagation();
+			console.log("asas");
+			if(window.min_shapes==0){
+				e.stopImmediatePropagation();
+			}
+			else if($("#remarks").is(":focus")){
+				//seperated the if conditions for better understanding.
+				e.stopImmediatePropagation();
+			}
 		}
 		document.addEventListener("keydown", keyDownTextField, false);
 	</script>
